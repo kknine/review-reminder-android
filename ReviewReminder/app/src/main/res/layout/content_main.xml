@@ -9,21 +9,6 @@
     tools:showIn="@layout/activity_main"
     android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/main_subject_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Name of subject"
-        android:inputType="textPersonName" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="addSubject"
-        android:text="Add" />
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/main_recycler"
         android:layout_width="match_parent"

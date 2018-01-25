@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.TimeUtils;
 
 import com.kk9software.reviewreminder.data.ReviewContract.*;
+import com.kk9software.reviewreminder.model.Reminder;
 import com.kk9software.reviewreminder.model.Subject;
 
 import java.util.ArrayList;
@@ -34,7 +35,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 ReminderEntry.TABLE_NAME + " (" +
                 ReminderEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 ReminderEntry.COLUMN_SUBJECT_ID + " INTEGER NOT NULL, " +
-                ReminderEntry.COLUMN_REMINDER_TIME + " LONG NOT NULL" +
+                ReminderEntry.COLUMN_REMINDER_TIME + " LONG NOT NULL, " +
+                ReminderEntry.COLUMN_TIME_INTERVAL + " INTEGER NOT NULL" +
                 ");";
         db.execSQL(SQLITE_CREATE_SUBJECTS_TABLE);
         db.execSQL(SQLITE_CREATE_REMINDERS_TABLE);
@@ -51,17 +53,60 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.query(SubjectEntry.TABLE_NAME,null,null,null,null,null,null,null);
         ArrayList<Subject> subjectList = new ArrayList<>();
-        while(c.moveToNext()) {
-            subjectList.add(new Subject(c.getInt(0),c.getString(1),c.getLong(2)));
+        while (c.moveToNext()) {
+            subjectList.add(new Subject(c.getInt(0), c.getString(1), c.getLong(2)));
         }
         c.close();
         return subjectList;
     }
-    public void addSubject(Subject subject) {
+    public int addSubject(Subject subject) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(SubjectEntry.COLUMN_SUBJECT_NAME,subject.getName());
         cv.put(SubjectEntry.COLUMN_LEARN_TIME, subject.getLearnTime());
-        db.insert(SubjectEntry.TABLE_NAME,null,cv);
+        long subjectId = db.insert(SubjectEntry.TABLE_NAME,null,cv);
+        return (int)subjectId;
+    }
+
+    public ArrayList<Reminder> getAllReminders() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.query(ReminderEntry.TABLE_NAME,null,null,null,null,null,null,null);
+        ArrayList<Reminder> reminderList = new ArrayList<>();
+        while (c.moveToNext()) {
+            reminderList.add(new Reminder(c.getInt(0), c.getInt(1), c.getLong(2)));
+        }
+        c.close();
+        return reminderList;
+    }
+    public ArrayList<Reminder> getAllRemindersWithSubjects() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String SELECT_QUERY = "SELECT " +
+                ReminderEntry.TABLE_NAME + "." + ReminderEntry._ID + ", " +
+                ReminderEntry.TABLE_NAME + "." + ReminderEntry.COLUMN_SUBJECT_ID + ", " +
+                SubjectEntry.TABLE_NAME + "." + SubjectEntry.COLUMN_SUBJECT_NAME + ", " +
+                ReminderEntry.TABLE_NAME + "." + ReminderEntry.COLUMN_REMINDER_TIME + ", " +
+                ReminderEntry.TABLE_NAME + "." + ReminderEntry.COLUMN_TIME_INTERVAL + " FROM " +
+                ReminderEntry.TABLE_NAME + " INNER JOIN " +
+                SubjectEntry.TABLE_NAME + " ON " +
+                ReminderEntry.TABLE_NAME + "." + ReminderEntry.COLUMN_SUBJECT_ID + " = " +
+                SubjectEntry.TABLE_NAME + "." + SubjectEntry._ID + " ORDER BY " +
+                ReminderEntry.TABLE_NAME + "." + ReminderEntry.COLUMN_REMINDER_TIME + " ASC";
+        System.out.println(SELECT_QUERY);
+        Cursor c = db.rawQuery(SELECT_QUERY,null);
+        ArrayList<Reminder> reminderList = new ArrayList<>();
+        while (c.moveToNext()) {
+            reminderList.add(new Reminder(c.getInt(0),  c.getInt(1), c.getString(2), c.getLong(3), c.getInt(4)));
+        }
+        c.close();
+        return reminderList;
+    }
+
+    public void addReminder(Reminder reminder) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(ReminderEntry.COLUMN_SUBJECT_ID,reminder.getSubjectId());
+        cv.put(ReminderEntry.COLUMN_REMINDER_TIME, reminder.getReminderTime());
+        cv.put(ReminderEntry.COLUMN_TIME_INTERVAL, reminder.getTimeInterval());
+        db.insert(ReminderEntry.TABLE_NAME,null,cv);
     }
 }

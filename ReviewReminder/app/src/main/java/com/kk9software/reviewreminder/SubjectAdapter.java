@@ -1,34 +1,31 @@
 package com.kk9software.reviewreminder;
 
 
-import android.content.Context;
-import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.kk9software.reviewreminder.data.ReviewContract;
 import com.kk9software.reviewreminder.model.Subject;
 
 import java.util.ArrayList;
 
-public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder> {
+public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectViewHolder> {
 
     private ArrayList<Subject> mSubjectList;
-    public ReviewAdapter(ArrayList<Subject> subjectList) {
+    public SubjectAdapter(ArrayList<Subject> subjectList) {
         this.mSubjectList = subjectList;
     }
 
     @Override
-    public ReviewViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public SubjectViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_review, parent, false);
-        return new ReviewViewHolder(view);
+        return new SubjectViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(ReviewViewHolder holder, int position) {
+    public void onBindViewHolder(SubjectViewHolder holder, int position) {
         if(mSubjectList.size()<=position)
             return;
         holder.bind(mSubjectList.get(position));
@@ -43,14 +40,14 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         this.notifyDataSetChanged();
     }
 
-    class ReviewViewHolder extends RecyclerView.ViewHolder {
-        TextView reviewName;
-        public ReviewViewHolder(View itemView) {
+    class SubjectViewHolder extends RecyclerView.ViewHolder {
+        TextView subjectName;
+        public SubjectViewHolder(View itemView) {
             super(itemView);
-            reviewName = (TextView) itemView.findViewById(R.id.lir_text);
+            subjectName = (TextView) itemView.findViewById(R.id.lir_text);
         }
         public void bind(Subject subjectToDisplay) {
-            reviewName.setText(subjectToDisplay.getName());
+            subjectName.setText(subjectToDisplay.getName());
         }
     }
 }

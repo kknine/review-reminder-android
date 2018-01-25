@@ -1,5 +1,6 @@
 package com.kk9software.reviewreminder;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,6 +14,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.kk9software.reviewreminder.data.DBHelper;
+import com.kk9software.reviewreminder.model.Reminder;
 import com.kk9software.reviewreminder.model.Subject;
 
 import java.util.Calendar;
@@ -20,7 +22,8 @@ import java.util.Calendar;
 public class MainActivity extends AppCompatActivity {
 
     private DBHelper db;
-    private ReviewAdapter reviewAdapter;
+    private SubjectAdapter subjectAdapter;
+    private ReminderAdapter reminderAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,16 +35,22 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(MainActivity.this,AddSubjectActivity.class);
+                startActivity(intent);
             }
         });
         db = new DBHelper(this);
-        reviewAdapter = new ReviewAdapter(db.getAllSubjects());
+        //subjectAdapter = new SubjectAdapter(db.getAllSubjects());
+        reminderAdapter = new ReminderAdapter(null,this);
         RecyclerView ReviewList = (RecyclerView) findViewById(R.id.main_recycler);
         ReviewList.setHasFixedSize(true);
         ReviewList.setLayoutManager(new LinearLayoutManager(this));
-        ReviewList.setAdapter(reviewAdapter);
+        //ReviewList.setAdapter(subjectAdapter);
+        ReviewList.setAdapter(reminderAdapter);
+    }
+    protected void onStart() {
+        super.onStart();
+        reminderAdapter.swapCursor(db.getAllRemindersWithSubjects());
     }
 
     @Override
@@ -64,13 +73,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-    public void addSubject(View v) {
-        EditText et_subjectName = (EditText) findViewById(R.id.main_subject_name);
-        Calendar cal = Calendar.getInstance();
-        Subject subjectToAdd = new Subject(et_subjectName.getText().toString(),cal.getTimeInMillis());
-        db.addSubject(subjectToAdd);
-        reviewAdapter.swapCursor(db.getAllSubjects());
-
     }
 }

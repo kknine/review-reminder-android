@@ -14,5 +14,6 @@ public class ReviewContract {
         public static final String TABLE_NAME = "reminders";
         public static final String COLUMN_SUBJECT_ID = "subjectId";
         public static final String COLUMN_REMINDER_TIME = "reminderTime";
+        public static final String COLUMN_TIME_INTERVAL = "timeInterval";
     }
 }
