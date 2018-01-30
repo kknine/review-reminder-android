@@ -109,4 +109,8 @@ public class DBHelper extends SQLiteOpenHelper {
         cv.put(ReminderEntry.COLUMN_TIME_INTERVAL, reminder.getTimeInterval());
         db.insert(ReminderEntry.TABLE_NAME,null,cv);
     }
+    public void removeReminder(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(ReminderEntry.TABLE_NAME,ReminderEntry._ID+  "=?",new String[]{Integer.toString(id)});
+    }
 }

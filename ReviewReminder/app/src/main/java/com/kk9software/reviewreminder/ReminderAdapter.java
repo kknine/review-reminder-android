@@ -17,11 +17,6 @@ import java.util.Calendar;
 
 public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ReminderViewHolder> {
 
-//    public static final int MINUTES = 0;
-//    public static final int HOURS = 1;
-//    public static final int DAYS = 2;
-//    public static final int WEEKS = 3;
-//    public static final int MONTHS = 4;
     private ArrayList<Reminder> mReminderList;
     private Context context;
     public ReminderAdapter(ArrayList<Reminder> reminderList, Context context) {
@@ -50,7 +45,7 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
             return mReminderList.size();
     }
 
-    public void swapCursor(ArrayList<Reminder> newReminderList) {
+    public void swapData(ArrayList<Reminder> newReminderList) {
         mReminderList = newReminderList;
         this.notifyDataSetChanged();
     }
@@ -70,6 +65,7 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
         public void bind(Reminder reminderToDisplay) {
             reminderName_tv.setText(reminderToDisplay.getSubjectName());
             reminderTime_tv.setText(howFar(reminderToDisplay.getReminderTime()));
+            this.itemView.setTag(reminderToDisplay.getId());
             int color = determineColor(reminderToDisplay);
             if(color!=0) {
                 background_ll.setBackgroundColor(ContextCompat.getColor(context,color));
@@ -77,11 +73,6 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
 
         }
 
-//        private int howMany(int what, long time) {
-//            Calendar cal = Calendar.getInstance();
-//            Calendar cal_review = Calendar.getInstance();
-//            cal_review.setTimeInMillis(time);
-//        }
 
         // Determines color
         // 0 - no color
@@ -95,7 +86,7 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
             int red = R.color.red;
             switch(interval) {
                 case 0:
-                    if(Math.abs(difference)<=TimeUnit.MINUTES.toMillis(58))
+                    if(Math.abs(difference)<=TimeUnit.MINUTES.toMillis(15))
                         return green;
                     else if(difference<-TimeUnit.MINUTES.toMillis(15))
                         return red;
@@ -111,8 +102,9 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
                 default:
                     return 0;
             }
+
         }
-        // TODO: Generally it looks horrible, it should be changed
+        // TODO: Generally it should be changed
         private String howFar(long dataTime) {
             Calendar now = Calendar.getInstance();
             long nowTime = now.getTimeInMillis();

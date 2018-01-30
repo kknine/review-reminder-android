@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,7 +23,6 @@ import java.util.Calendar;
 public class MainActivity extends AppCompatActivity {
 
     private DBHelper db;
-    private SubjectAdapter subjectAdapter;
     private ReminderAdapter reminderAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,35 +39,43 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        // Fill the list with reminders
+
         db = new DBHelper(this);
-        //subjectAdapter = new SubjectAdapter(db.getAllSubjects());
         reminderAdapter = new ReminderAdapter(null,this);
         RecyclerView ReviewList = (RecyclerView) findViewById(R.id.main_recycler);
         ReviewList.setHasFixedSize(true);
         ReviewList.setLayoutManager(new LinearLayoutManager(this));
-        //ReviewList.setAdapter(subjectAdapter);
         ReviewList.setAdapter(reminderAdapter);
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                int id = (int) viewHolder.itemView.getTag();
+                db.removeReminder(id);
+                reminderAdapter.swapData(db.getAllRemindersWithSubjects());
+            }
+        }).attachToRecyclerView(ReviewList);
     }
     protected void onStart() {
         super.onStart();
-        reminderAdapter.swapCursor(db.getAllRemindersWithSubjects());
+        reminderAdapter.swapData(db.getAllRemindersWithSubjects());
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
