@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Fill the list with reminders
-
         db = new DBHelper(this);
         reminderAdapter = new ReminderAdapter(null,this);
         RecyclerView ReviewList = (RecyclerView) findViewById(R.id.main_recycler);
