@@ -44,7 +44,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectV
         TextView subjectName;
         public SubjectViewHolder(View itemView) {
             super(itemView);
-            subjectName = (TextView) itemView.findViewById(R.id.lir_text);
+            subjectName = (TextView) itemView.findViewById(R.id.lir_subject);
         }
         public void bind(Subject subjectToDisplay) {
             subjectName.setText(subjectToDisplay.getName());

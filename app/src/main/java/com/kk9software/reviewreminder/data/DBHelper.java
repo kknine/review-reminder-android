@@ -113,8 +113,8 @@ public class DBHelper extends SQLiteOpenHelper {
     public Subject getSubject(int subjectId) {
         SQLiteDatabase db  = this.getWritableDatabase();
         Subject result = null;
-        Cursor c = db.query(SubjectEntry.TABLE_NAME,null,"id=?",new String[] {Integer.toString(subjectId)},null,null,null,"1");
-        if(c.getCount()>0) {
+        Cursor c = db.query(SubjectEntry.TABLE_NAME,null,SubjectEntry._ID + "=?",new String[] {Integer.toString(subjectId)},null,null,null,"1");
+        if(c.moveToFirst()) {
             result = new Subject(c.getInt(0),c.getInt(1),c.getString(2),c.getLong(3));
         }
         c.close();
@@ -155,7 +155,7 @@ public class DBHelper extends SQLiteOpenHelper {
         Category category = null;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.query(CategoryEntry.TABLE_NAME,null,CategoryEntry._ID + "=?",new String[] {Integer.toString(categoryId)},null,null,null,"1");
-        if(c.getCount()>0) {
+        if(c.moveToFirst()) {
             category = new Category(c.getInt(0),c.getString(1));
         }
         c.close();
