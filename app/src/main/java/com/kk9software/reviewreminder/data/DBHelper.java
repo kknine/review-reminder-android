@@ -15,11 +15,12 @@ import com.kk9software.reviewreminder.model.Subject;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 
 public class DBHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "reviews.db";
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
 
     public DBHelper(Context context) {
         super(context,DATABASE_NAME,null,DATABASE_VERSION);
@@ -39,7 +40,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 ReminderEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 ReminderEntry.COLUMN_SUBJECT_ID + " INTEGER NOT NULL, " +
                 ReminderEntry.COLUMN_REMINDER_TIME + " LONG NOT NULL, " +
-                ReminderEntry.COLUMN_TIME_INTERVAL + " INTEGER NOT NULL" +
+                ReminderEntry.COLUMN_TIME_INTERVAL + " INTEGER NOT NULL, " +
+                ReminderEntry.COLUMN_IF_COMPLETED + " INTEGER NOT NULL" +
                 ");";
         String SQLITE_CREATE_CATEGORIES_TABLE = "CREATE TABLE " +
                 CategoryEntry.TABLE_NAME + " (" +
@@ -55,6 +57,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS "+ReminderEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+SubjectEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+CategoryEntry.TABLE_NAME);
         onCreate(db);
     }
 
@@ -78,44 +81,54 @@ public class DBHelper extends SQLiteOpenHelper {
         return (int)subjectId;
     }
 
-//    public ArrayList<Reminder> getAllReminders() {
-//        SQLiteDatabase db = this.getReadableDatabase();
-//        Cursor c = db.query(ReminderEntry.TABLE_NAME,null,null,null,null,null,null,null);
-//        ArrayList<Reminder> reminderList = new ArrayList<>();
-//        while (c.moveToNext()) {
-//            reminderList.add(new Reminder(c.getInt(0), c.getInt(1), c.getLong(2)));
-//        }
-//        c.close();
-//        return reminderList;
-//    }
-    public ArrayList<Reminder> getAllRemindersWithSubjects() {
+    public ArrayList<Reminder> getAllUnCompletedReminders() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String SELECT_QUERY = "SELECT " +
-                ReminderEntry.TABLE_NAME + "." + ReminderEntry._ID + ", " +
-                ReminderEntry.TABLE_NAME + "." + ReminderEntry.COLUMN_SUBJECT_ID + ", " +
-                SubjectEntry.TABLE_NAME + "." + SubjectEntry.COLUMN_SUBJECT_NAME + ", " +
-                ReminderEntry.TABLE_NAME + "." + ReminderEntry.COLUMN_REMINDER_TIME + ", " +
-                ReminderEntry.TABLE_NAME + "." + ReminderEntry.COLUMN_TIME_INTERVAL + " FROM " +
-                ReminderEntry.TABLE_NAME + " INNER JOIN " +
-                SubjectEntry.TABLE_NAME + " ON " +
-                ReminderEntry.TABLE_NAME + "." + ReminderEntry.COLUMN_SUBJECT_ID + " = " +
-                SubjectEntry.TABLE_NAME + "." + SubjectEntry._ID + " ORDER BY " +
-                ReminderEntry.TABLE_NAME + "." + ReminderEntry.COLUMN_REMINDER_TIME + " ASC";
-        System.out.println(SELECT_QUERY);
-        Cursor c = db.rawQuery(SELECT_QUERY,null);
+        Cursor c = db.query(ReminderEntry.TABLE_NAME,null,ReminderEntry.COLUMN_IF_COMPLETED + "=?",new String[]{Integer.toString(Reminder.NOT_COMPLETED)},null,null,ReminderEntry.COLUMN_REMINDER_TIME + " ASC",null);
         ArrayList<Reminder> reminderList = new ArrayList<>();
         while (c.moveToNext()) {
-            reminderList.add(new Reminder(c.getInt(0),  c.getInt(1), c.getString(2), c.getLong(3), c.getInt(4)));
+            reminderList.add(new Reminder(c.getInt(0), c.getInt(1), c.getLong(2), c.getInt(3), c.getInt(4)));
         }
         c.close();
         return reminderList;
     }
+//    public ArrayList<Reminder> getAllRemindersWithSubjects() {
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        String SELECT_QUERY = "SELECT " +
+//                ReminderEntry.TABLE_NAME + "." + ReminderEntry._ID + ", " +
+//                ReminderEntry.TABLE_NAME + "." + ReminderEntry.COLUMN_SUBJECT_ID + ", " +
+//                SubjectEntry.TABLE_NAME + "." + SubjectEntry.COLUMN_SUBJECT_NAME + ", " +
+//                ReminderEntry.TABLE_NAME + "." + ReminderEntry.COLUMN_REMINDER_TIME + ", " +
+//                ReminderEntry.TABLE_NAME + "." + ReminderEntry.COLUMN_TIME_INTERVAL + " FROM " +
+//                ReminderEntry.TABLE_NAME + " INNER JOIN " +
+//                SubjectEntry.TABLE_NAME + " ON " +
+//                ReminderEntry.TABLE_NAME + "." + ReminderEntry.COLUMN_SUBJECT_ID + " = " +
+//                SubjectEntry.TABLE_NAME + "." + SubjectEntry._ID + " ORDER BY " +
+//                ReminderEntry.TABLE_NAME + "." + ReminderEntry.COLUMN_REMINDER_TIME + " ASC";
+//        System.out.println(SELECT_QUERY);
+//        Cursor c = db.rawQuery(SELECT_QUERY,null);
+//        ArrayList<Reminder> reminderList = new ArrayList<>();
+//        while (c.moveToNext()) {
+//            reminderList.add(new Reminder(c.getInt(0),  c.getInt(1), c.getString(2), c.getLong(3), c.getInt(4), c.getInt(5)));
+//        }
+//        c.close();
+//        return reminderList;
+//    }
     public Subject getSubject(int subjectId) {
-        SQLiteDatabase db  = this.getWritableDatabase();
+        SQLiteDatabase db  = this.getReadableDatabase();
         Subject result = null;
         Cursor c = db.query(SubjectEntry.TABLE_NAME,null,SubjectEntry._ID + "=?",new String[] {Integer.toString(subjectId)},null,null,null,"1");
         if(c.moveToFirst()) {
             result = new Subject(c.getInt(0),c.getInt(1),c.getString(2),c.getLong(3));
+        }
+        c.close();
+        return result;
+    }
+    public Reminder getReminder(int reminderId) {
+        SQLiteDatabase db  = this.getReadableDatabase();
+        Reminder result = null;
+        Cursor c = db.query(ReminderEntry.TABLE_NAME,null,ReminderEntry._ID + "=?",new String[] {Integer.toString(reminderId)},null,null,null,"1");
+        if(c.moveToFirst()) {
+            result = new Reminder(c.getInt(0),c.getInt(1),c.getLong(2),c.getInt(3),c.getInt(4));
         }
         c.close();
         return result;
@@ -128,11 +141,57 @@ public class DBHelper extends SQLiteOpenHelper {
         cv.put(ReminderEntry.COLUMN_SUBJECT_ID,reminder.getSubjectId());
         cv.put(ReminderEntry.COLUMN_REMINDER_TIME, reminder.getReminderTime());
         cv.put(ReminderEntry.COLUMN_TIME_INTERVAL, reminder.getTimeInterval());
+        cv.put(ReminderEntry.COLUMN_IF_COMPLETED, reminder.getIfCompleted());
         db.insert(ReminderEntry.TABLE_NAME,null,cv);
     }
     public void removeReminder(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(ReminderEntry.TABLE_NAME,ReminderEntry._ID+  "=?",new String[]{Integer.toString(id)});
+        db.delete(ReminderEntry.TABLE_NAME,ReminderEntry._ID + "=?",new String[]{Integer.toString(id)});
+    }
+    public void completeReview(int reminderId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(ReminderEntry.COLUMN_IF_COMPLETED,Reminder.COMPLETED);
+        db.update(ReminderEntry.TABLE_NAME,cv,ReminderEntry._ID + "=?",new String[]{Integer.toString(reminderId)});
+        Reminder previous = getReminder(reminderId);
+        int subjectId = previous.getSubjectId();
+        int timeInterval = previous.getTimeInterval();
+        if(timeInterval!=Reminder.ONE_YEAR)
+            timeInterval++;
+        addReminder(new Reminder(subjectId,newReminderTime(timeInterval),timeInterval,Reminder.NOT_COMPLETED));
+    }
+    public long newReminderTime(int timeInterval) {
+        Calendar cal = Calendar.getInstance();
+        switch(timeInterval) {
+            case Reminder.ONE_HOUR:
+                cal.add(Calendar.HOUR_OF_DAY, 1);
+                break;
+            case Reminder.ONE_DAY:
+                cal.add(Calendar.DAY_OF_YEAR, 1);
+                break;
+            case Reminder.THREE_DAYS:
+                cal.add(Calendar.DAY_OF_YEAR, 3);
+                break;
+            case Reminder.ONE_WEEK:
+                cal.add(Calendar.WEEK_OF_YEAR, 1);
+                break;
+            case Reminder.ONE_MONTH:
+                cal.add(Calendar.MONTH, 1);
+                break;
+            case Reminder.THREE_MONTHS:
+                cal.add(Calendar.MONTH, 3);
+                break;
+            case Reminder.SIX_MONTHS:
+                cal.add(Calendar.MONTH, 6);
+                break;
+            case Reminder.ONE_YEAR:
+                cal.add(Calendar.YEAR, 1);
+                break;
+            default:
+                cal.add(Calendar.YEAR, 1);
+                break;
+        }
+        return cal.getTimeInMillis();
     }
 
     public ArrayList<Category> getAllCategories() {

@@ -16,6 +16,7 @@ public class ReviewContract {
         public static final String COLUMN_SUBJECT_ID = "subject_id";
         public static final String COLUMN_REMINDER_TIME = "reminder_time";
         public static final String COLUMN_TIME_INTERVAL = "time_interval";
+        public static final String COLUMN_IF_COMPLETED = "if_completed";
     }
     public class CategoryEntry implements BaseColumns {
         public static final String TABLE_NAME = "categories";

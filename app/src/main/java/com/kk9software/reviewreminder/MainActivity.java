@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.kk9software.reviewreminder.data.DBHelper;
 import com.kk9software.reviewreminder.model.Reminder;
@@ -58,14 +59,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int id = (int) viewHolder.itemView.getTag();
-                db.removeReminder(id);
-                reminderAdapter.swapData(db.getAllRemindersWithSubjects());
+                db.completeReview(id);
+                reminderAdapter.swapData(db.getAllUnCompletedReminders());
+                Toast.makeText(MainActivity.this,"Nice Job!", Toast.LENGTH_LONG).show();
             }
         }).attachToRecyclerView(ReviewList);
     }
     protected void onStart() {
         super.onStart();
-        reminderAdapter.swapData(db.getAllRemindersWithSubjects());
+        reminderAdapter.swapData(db.getAllUnCompletedReminders());
     }
 
     @Override
