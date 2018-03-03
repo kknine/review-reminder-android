@@ -2,25 +2,32 @@ package com.kk9software.reviewreminder.model;
 
 
 public class Subject {
-    private int _id;
-    private String _name;
-    private long _learnTime;
-    public Subject(int id, String name,long learnTime) {
-        this._id = id;
-        this._name = name;
-        this._learnTime = learnTime;
+    private final int id;
+    private final int categoryId;
+    private final String name;
+    private final long learnTime;
+    public Subject(int id, int categoryId, String name,long learnTime) {
+        this.id = id;
+        this.categoryId = categoryId;
+        this.name = name;
+        this.learnTime = learnTime;
     }
-    public Subject(String name, long learnTime) {
-        this._name = name;
-        this._learnTime = learnTime;
+    public Subject(int categoryId, String name, long learnTime) {
+        this.id = -1;
+        this.categoryId = categoryId;
+        this.name = name;
+        this.learnTime = learnTime;
     }
     public int getId() {
-        return this._id;
+        return this.id;
+    }
+    public int getCategoryId() {
+        return this.categoryId;
     }
     public String getName() {
-        return this._name;
+        return this.name;
     }
     public long getLearnTime() {
-        return this._learnTime;
+        return this.learnTime;
     }
 }

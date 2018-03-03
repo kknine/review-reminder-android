@@ -1,5 +1,6 @@
 package com.kk9software.reviewreminder;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +19,9 @@ import java.util.Calendar;
 public class AddSubjectActivity extends AppCompatActivity {
 
     private DBHelper db;
+    int categoryId;
+    public static final int CHOOSE_CATEGORY_REQUEST = 23;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +51,7 @@ public class AddSubjectActivity extends AppCompatActivity {
         Calendar def_cal = Calendar.getInstance();
         Calendar cal2 = Calendar.getInstance();
         long time = def_cal.getTimeInMillis();
-        int subjectId = db.addSubject(new Subject(subjectName,time));
+        int subjectId = db.addSubject(new Subject(categoryId,subjectName,time));
         if(b_1h) {
             cal2.add(Calendar.HOUR_OF_DAY,1);
             db.addReminder(new Reminder(subjectId,cal2.getTimeInMillis(),Reminder.ONE_HOUR));
@@ -92,5 +96,7 @@ public class AddSubjectActivity extends AppCompatActivity {
         toast.show();
         finish();
     }
+
+
 
 }
