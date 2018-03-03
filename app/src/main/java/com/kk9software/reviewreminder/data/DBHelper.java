@@ -8,9 +8,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.TimeUtils;
 
 import com.kk9software.reviewreminder.data.ReviewContract.*;
+import com.kk9software.reviewreminder.model.Category;
 import com.kk9software.reviewreminder.model.Reminder;
 import com.kk9software.reviewreminder.model.Subject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -42,7 +44,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String SQLITE_CREATE_CATEGORIES_TABLE = "CREATE TABLE " +
                 CategoryEntry.TABLE_NAME + " (" +
                 CategoryEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                CategoryEntry.COLUMN_CATEGORY_NAME + " TEXT NOT NULL, " +
+                CategoryEntry.COLUMN_CATEGORY_NAME + " TEXT NOT NULL" +
                 ");";
         db.execSQL(SQLITE_CREATE_SUBJECTS_TABLE);
         db.execSQL(SQLITE_CREATE_REMINDERS_TABLE);
@@ -108,10 +110,10 @@ public class DBHelper extends SQLiteOpenHelper {
         c.close();
         return reminderList;
     }
-    public Subject getSubject(int id) {
+    public Subject getSubject(int subjectId) {
         SQLiteDatabase db  = this.getWritableDatabase();
         Subject result = null;
-        Cursor c = db.query(SubjectEntry.TABLE_NAME,null,"id=?",new String[] {Integer.toString(id)},null,null,null,"1");
+        Cursor c = db.query(SubjectEntry.TABLE_NAME,null,"id=?",new String[] {Integer.toString(subjectId)},null,null,null,"1");
         if(c.getCount()>0) {
             result = new Subject(c.getInt(0),c.getInt(1),c.getString(2),c.getLong(3));
         }
@@ -131,5 +133,32 @@ public class DBHelper extends SQLiteOpenHelper {
     public void removeReminder(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(ReminderEntry.TABLE_NAME,ReminderEntry._ID+  "=?",new String[]{Integer.toString(id)});
+    }
+
+    public ArrayList<Category> getAllCategories() {
+        ArrayList<Category> categoryList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.query(CategoryEntry.TABLE_NAME,null,null,null,null,null,null,null);
+        while(c.moveToNext()) {
+            categoryList.add(new Category(c.getInt(0),c.getString(1)));
+        }
+        c.close();
+        return categoryList;
+    }
+    public int addCategory(Category category) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(CategoryEntry.COLUMN_CATEGORY_NAME,category.getName());
+        return (int)db.insert(CategoryEntry.TABLE_NAME,null,cv);
+    }
+    public Category getCategory(int categoryId) {
+        Category category = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.query(CategoryEntry.TABLE_NAME,null,CategoryEntry._ID + "=?",new String[] {Integer.toString(categoryId)},null,null,null,"1");
+        if(c.getCount()>0) {
+            category = new Category(c.getInt(0),c.getString(1));
+        }
+        c.close();
+        return category;
     }
 }

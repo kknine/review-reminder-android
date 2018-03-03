@@ -22,11 +22,12 @@
         <activity
             android:name=".AddSubjectActivity"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ChooseCategoryActivity"
             android:label="@string/title_activity_choose_category"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".AddCategoryActivity"></activity>
     </application>
 
 </manifest>

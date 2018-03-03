@@ -27,6 +27,15 @@ public class AddSubjectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_subject);
         db = new DBHelper(this);
+        Intent i = getIntent();
+        Bundle extras = i.getExtras();
+        if(extras!=null) {
+            String categoryName = extras.getString(ChooseCategoryActivity.EXTRA_CATEGORY_NAME,"Default category");
+            categoryId = extras.getInt(ChooseCategoryActivity.EXTRA_CATEGORY_ID,0);
+            TextView tvCategoryName = (TextView)findViewById(R.id.ads_category);
+            tvCategoryName.setText(categoryName);
+        }
+
     }
 
     public void addNewSubject(View v) {

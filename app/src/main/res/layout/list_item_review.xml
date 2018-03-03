@@ -9,18 +9,15 @@
         android:id="@+id/lir_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="8dp"
         android:textSize="22sp" />
 
     <TextView
         android:id="@+id/lir_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="8dp"
         android:gravity="left"
         android:textSize="14sp" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@android:color/holo_blue_dark" />
 
 </LinearLayout>
