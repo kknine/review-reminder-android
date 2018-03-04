@@ -1,6 +1,7 @@
 package com.kk9software.reviewreminder;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -77,10 +78,7 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
             tvReminderTime.setText(howFar(reminderToDisplay.getReminderTime()));
             this.itemView.setTag(reminderToDisplay.getId());
             int color = determineColor(reminderToDisplay);
-            if(color!=0) {
-                llBackground.setBackgroundColor(ContextCompat.getColor(mContext,color));
-            }
-
+            llBackground.setBackgroundColor(ContextCompat.getColor(mContext,color));
         }
 
 
@@ -94,6 +92,7 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
             long difference = reminder.getReminderTime() - cal.getTimeInMillis();
             int green = R.color.green;
             int red = R.color.red;
+            int white = R.color.white;
             switch(interval) {
                 case 0:
                     if(Math.abs(difference)<=TimeUnit.MINUTES.toMillis(15))
@@ -101,16 +100,16 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
                     else if(difference<-TimeUnit.MINUTES.toMillis(15))
                         return red;
                     else
-                        return 0;
+                        return white;
                 case 1:
                     if(Math.abs(difference)<=TimeUnit.HOURS.toMillis(6))
                         return green;
                     else if(difference<-TimeUnit.HOURS.toMillis(6))
                         return red;
                     else
-                        return 0;
+                        return white;
                 default:
-                    return 0;
+                    return white;
             }
 
         }
