@@ -22,12 +22,23 @@
         <activity
             android:name=".AddSubjectActivity"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:label="Add new subject" />
         <activity
             android:name=".ChooseCategoryActivity"
-            android:label="@string/title_activity_choose_category"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".AddCategoryActivity"></activity>
+        <activity
+            android:name=".AddCategoryActivity"
+            android:label="Add new category"/>
+        <activity
+            android:name=".ChooseChapterActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ChooseSubjectActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".AddChapterActivity"
+            android:label="Add new chapter" />
     </application>
 
 </manifest>

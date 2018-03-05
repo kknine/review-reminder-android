@@ -9,6 +9,7 @@ import android.util.TimeUtils;
 
 import com.kk9software.reviewreminder.data.ReviewContract.*;
 import com.kk9software.reviewreminder.model.Category;
+import com.kk9software.reviewreminder.model.Chapter;
 import com.kk9software.reviewreminder.model.Reminder;
 import com.kk9software.reviewreminder.model.Subject;
 
@@ -20,7 +21,7 @@ import java.util.Date;
 
 public class DBHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "reviews.db";
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 4;
 
     public DBHelper(Context context) {
         super(context,DATABASE_NAME,null,DATABASE_VERSION);
@@ -31,7 +32,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String SQLITE_CREATE_SUBJECTS_TABLE = "CREATE TABLE " +
                 SubjectEntry.TABLE_NAME + " (" +
                 SubjectEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                SubjectEntry.COLUMN_CATEGORY_ID + " INTEGER NOT NULL, " +
+                SubjectEntry.COLUMN_CHAPTER_ID + " INTEGER NOT NULL, " +
                 SubjectEntry.COLUMN_SUBJECT_NAME + " TEXT NOT NULL, " +
                 SubjectEntry.COLUMN_LEARN_TIME + " LONG NOT NULL" +
                 ");";
@@ -48,39 +49,110 @@ public class DBHelper extends SQLiteOpenHelper {
                 CategoryEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 CategoryEntry.COLUMN_CATEGORY_NAME + " TEXT NOT NULL" +
                 ");";
+        String SQLITE_CREATE_CHAPTERS_TABLE = "CREATE TABLE " +
+                ChapterEntry.TABLE_NAME + " (" +
+                ChapterEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                ChapterEntry.COLUMN_CATEGORY_ID + " INTEGER NOT NULL, " +
+                ChapterEntry.COLUMN_CHAPTER_NAME + " TEXT NOT NULL" +
+                ");";
         db.execSQL(SQLITE_CREATE_SUBJECTS_TABLE);
         db.execSQL(SQLITE_CREATE_REMINDERS_TABLE);
         db.execSQL(SQLITE_CREATE_CATEGORIES_TABLE);
+        db.execSQL(SQLITE_CREATE_CHAPTERS_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS "+ReminderEntry.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS "+SubjectEntry.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS "+CategoryEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + ReminderEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + SubjectEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + CategoryEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + ChapterEntry.TABLE_NAME);
         onCreate(db);
     }
 
-    public ArrayList<Subject> getAllSubjects() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.query(SubjectEntry.TABLE_NAME,null,null,null,null,null,null,null);
-        ArrayList<Subject> subjectList = new ArrayList<>();
-        while (c.moveToNext()) {
-            subjectList.add(new Subject(c.getInt(0), c.getString(1), c.getLong(2)));
-        }
-        c.close();
-        return subjectList;
-    }
     public int addSubject(Subject subject) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put(SubjectEntry.COLUMN_CATEGORY_ID,subject.getCategoryId());
+        cv.put(SubjectEntry.COLUMN_CHAPTER_ID,subject.getChapterId());
         cv.put(SubjectEntry.COLUMN_SUBJECT_NAME,subject.getName());
         cv.put(SubjectEntry.COLUMN_LEARN_TIME, subject.getLearnTime());
         long subjectId = db.insert(SubjectEntry.TABLE_NAME,null,cv);
         return (int)subjectId;
     }
+    public void addReminder(Reminder reminder) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(ReminderEntry.COLUMN_SUBJECT_ID,reminder.getSubjectId());
+        cv.put(ReminderEntry.COLUMN_REMINDER_TIME, reminder.getReminderTime());
+        cv.put(ReminderEntry.COLUMN_TIME_INTERVAL, reminder.getTimeInterval());
+        cv.put(ReminderEntry.COLUMN_IF_COMPLETED, reminder.getIfCompleted());
+        db.insert(ReminderEntry.TABLE_NAME,null,cv);
+    }
+    public int addCategory(Category category) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(CategoryEntry.COLUMN_CATEGORY_NAME,category.getName());
+        return (int)db.insert(CategoryEntry.TABLE_NAME,null,cv);
+    }
+    public int addChapter(Chapter chapter) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv  = new ContentValues();
+        cv.put(ChapterEntry.COLUMN_CATEGORY_ID,chapter.getCategoryId());
+        cv.put(ChapterEntry.COLUMN_CHAPTER_NAME,chapter.getName());
+        return (int)db.insert(ChapterEntry.TABLE_NAME,null,cv);
+    }
 
+    public Subject getSubject(int subjectId) {
+        SQLiteDatabase db  = this.getReadableDatabase();
+        Subject result = null;
+        Cursor c = db.query(SubjectEntry.TABLE_NAME,null,SubjectEntry._ID + "=?",new String[] {Integer.toString(subjectId)},null,null,null,"1");
+        if(c.moveToFirst()) {
+            result = new Subject(c.getInt(0),c.getInt(1),c.getString(2),c.getLong(3));
+        }
+        c.close();
+        return result;
+    }
+    public Reminder getReminder(int reminderId) {
+        SQLiteDatabase db  = this.getReadableDatabase();
+        Reminder result = null;
+        Cursor c = db.query(ReminderEntry.TABLE_NAME,null,ReminderEntry._ID + "=?",new String[] {Integer.toString(reminderId)},null,null,null,"1");
+        if(c.moveToFirst()) {
+            result = new Reminder(c.getInt(0),c.getInt(1),c.getLong(2),c.getInt(3),c.getInt(4));
+        }
+        c.close();
+        return result;
+    }
+    public Category getCategory(int categoryId) {
+        Category category = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.query(CategoryEntry.TABLE_NAME,null,CategoryEntry._ID + "=?",new String[] {Integer.toString(categoryId)},null,null,null,"1");
+        if(c.moveToFirst()) {
+            category = new Category(c.getInt(0),c.getString(1));
+        }
+        c.close();
+        return category;
+    }
+    public Chapter getChapter(int chapterId) {
+        Chapter chapter = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.query(ChapterEntry.TABLE_NAME,null,ChapterEntry._ID + "=?",new String[] {Integer.toString(chapterId)},null,null,null,"1");
+        if(c.moveToFirst()) {
+            chapter = new Chapter(c.getInt(0),c.getInt(1),c.getString(2));
+        }
+        c.close();
+        return chapter;
+    }
+
+    public ArrayList<Subject> getSubjects(int chapterId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.query(SubjectEntry.TABLE_NAME,null,SubjectEntry.COLUMN_CHAPTER_ID + "=?",new String[] {Integer.toString(chapterId)},null,null,SubjectEntry._ID + " ASC",null);
+        ArrayList<Subject> subjectList = new ArrayList<>();
+        while (c.moveToNext()) {
+            subjectList.add(new Subject(c.getInt(0), c.getInt(1), c.getString(2), c.getLong(3)));
+        }
+        c.close();
+        return subjectList;
+    }
     public ArrayList<Reminder> getAllUnCompletedReminders() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.query(ReminderEntry.TABLE_NAME,null,ReminderEntry.COLUMN_IF_COMPLETED + "=?",new String[]{Integer.toString(Reminder.NOT_COMPLETED)},null,null,ReminderEntry.COLUMN_REMINDER_TIME + " ASC",null);
@@ -90,6 +162,26 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         c.close();
         return reminderList;
+    }
+    public ArrayList<Category> getAllCategories() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.query(CategoryEntry.TABLE_NAME,null,null,null,null,null,null,null);
+        ArrayList<Category> categoryList = new ArrayList<>();
+        while(c.moveToNext()) {
+            categoryList.add(new Category(c.getInt(0),c.getString(1)));
+        }
+        c.close();
+        return categoryList;
+    }
+    public ArrayList<Chapter> getChapters(int categoryId) {
+        ArrayList<Chapter> chapterList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.query(ChapterEntry.TABLE_NAME,null,ChapterEntry.COLUMN_CATEGORY_ID + "=?",new String[] {Integer.toString(categoryId)},null,null,ChapterEntry._ID + " ASC",null);
+        while(c.moveToNext()) {
+            chapterList.add(new Chapter(c.getInt(0),c.getInt(1),c.getString(2)));
+        }
+        c.close();
+        return chapterList;
     }
 //    public ArrayList<Reminder> getAllRemindersWithSubjects() {
 //        SQLiteDatabase db = this.getReadableDatabase();
@@ -113,37 +205,10 @@ public class DBHelper extends SQLiteOpenHelper {
 //        c.close();
 //        return reminderList;
 //    }
-    public Subject getSubject(int subjectId) {
-        SQLiteDatabase db  = this.getReadableDatabase();
-        Subject result = null;
-        Cursor c = db.query(SubjectEntry.TABLE_NAME,null,SubjectEntry._ID + "=?",new String[] {Integer.toString(subjectId)},null,null,null,"1");
-        if(c.moveToFirst()) {
-            result = new Subject(c.getInt(0),c.getInt(1),c.getString(2),c.getLong(3));
-        }
-        c.close();
-        return result;
-    }
-    public Reminder getReminder(int reminderId) {
-        SQLiteDatabase db  = this.getReadableDatabase();
-        Reminder result = null;
-        Cursor c = db.query(ReminderEntry.TABLE_NAME,null,ReminderEntry._ID + "=?",new String[] {Integer.toString(reminderId)},null,null,null,"1");
-        if(c.moveToFirst()) {
-            result = new Reminder(c.getInt(0),c.getInt(1),c.getLong(2),c.getInt(3),c.getInt(4));
-        }
-        c.close();
-        return result;
-    }
 
 
-    public void addReminder(Reminder reminder) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put(ReminderEntry.COLUMN_SUBJECT_ID,reminder.getSubjectId());
-        cv.put(ReminderEntry.COLUMN_REMINDER_TIME, reminder.getReminderTime());
-        cv.put(ReminderEntry.COLUMN_TIME_INTERVAL, reminder.getTimeInterval());
-        cv.put(ReminderEntry.COLUMN_IF_COMPLETED, reminder.getIfCompleted());
-        db.insert(ReminderEntry.TABLE_NAME,null,cv);
-    }
+
+
     public void removeReminder(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(ReminderEntry.TABLE_NAME,ReminderEntry._ID + "=?",new String[]{Integer.toString(id)});
@@ -194,30 +259,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return cal.getTimeInMillis();
     }
 
-    public ArrayList<Category> getAllCategories() {
-        ArrayList<Category> categoryList = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.query(CategoryEntry.TABLE_NAME,null,null,null,null,null,null,null);
-        while(c.moveToNext()) {
-            categoryList.add(new Category(c.getInt(0),c.getString(1)));
-        }
-        c.close();
-        return categoryList;
-    }
-    public int addCategory(Category category) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put(CategoryEntry.COLUMN_CATEGORY_NAME,category.getName());
-        return (int)db.insert(CategoryEntry.TABLE_NAME,null,cv);
-    }
-    public Category getCategory(int categoryId) {
-        Category category = null;
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.query(CategoryEntry.TABLE_NAME,null,CategoryEntry._ID + "=?",new String[] {Integer.toString(categoryId)},null,null,null,"1");
-        if(c.moveToFirst()) {
-            category = new Category(c.getInt(0),c.getString(1));
-        }
-        c.close();
-        return category;
-    }
+
+
+
 }

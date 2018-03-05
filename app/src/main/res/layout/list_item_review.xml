@@ -13,6 +13,13 @@
         android:textSize="22sp" />
 
     <TextView
+        android:id="@+id/lir_chapter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="18sp" />
+
+    <TextView
         android:id="@+id/lir_subject"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

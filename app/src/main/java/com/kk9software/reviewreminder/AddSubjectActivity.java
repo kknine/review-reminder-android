@@ -19,8 +19,7 @@ import java.util.Calendar;
 public class AddSubjectActivity extends AppCompatActivity {
 
     private DBHelper db;
-    int categoryId;
-    public static final int CHOOSE_CATEGORY_REQUEST = 23;
+    int chapterId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +29,10 @@ public class AddSubjectActivity extends AppCompatActivity {
         Intent i = getIntent();
         Bundle extras = i.getExtras();
         if(extras!=null) {
-            String categoryName = extras.getString(ChooseCategoryActivity.EXTRA_CATEGORY_NAME,"Default category");
-            categoryId = extras.getInt(ChooseCategoryActivity.EXTRA_CATEGORY_ID,0);
-            TextView tvCategoryName = (TextView)findViewById(R.id.ads_category);
-            tvCategoryName.setText(categoryName);
+            String chapterName = extras.getString(ChooseChapterActivity.EXTRA_CHAPTER_NAME,"Default category");
+            chapterId = extras.getInt(ChooseChapterActivity.EXTRA_CHAPTER_ID,0);
+            TextView tvCategoryName = (TextView)findViewById(R.id.ads_chapter);
+            tvCategoryName.setText(chapterName);
         }
 
     }
@@ -60,7 +59,7 @@ public class AddSubjectActivity extends AppCompatActivity {
         Calendar def_cal = Calendar.getInstance();
 //        Calendar cal2 = Calendar.getInstance();
         long time = def_cal.getTimeInMillis();
-        int subjectId = db.addSubject(new Subject(categoryId,subjectName,time));
+        int subjectId = db.addSubject(new Subject(chapterId,subjectName,time));
         db.addReminder(new Reminder(subjectId,db.newReminderTime(Reminder.ONE_HOUR),Reminder.ONE_HOUR,Reminder.NOT_COMPLETED));
 //        if(b_1h) {
 //            cal2.add(Calendar.HOUR_OF_DAY,1);

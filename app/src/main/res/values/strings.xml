@@ -2,4 +2,6 @@
     <string name="app_name">ReviewReminder</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_choose_category">Choose Category</string>
+    <string name="title_activity_choose_chapter">ChooseChapterActivity</string>
+    <string name="title_activity_choose_subject">ChooseSubjectActivity</string>
 </resources>

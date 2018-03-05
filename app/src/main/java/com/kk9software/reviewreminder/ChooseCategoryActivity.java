@@ -40,7 +40,7 @@ public class ChooseCategoryActivity extends AppCompatActivity {
         mCategoryAdapter = new CategoryAdapter(db.getAllCategories(), new OnItemClickListener() {
             @Override
             public void onItemClick(Category category) {
-                Intent i = new Intent(ChooseCategoryActivity.this,AddSubjectActivity.class);
+                Intent i = new Intent(ChooseCategoryActivity.this,ChooseChapterActivity.class);
                 i.putExtra(EXTRA_CATEGORY_NAME,category.getName());
                 i.putExtra(EXTRA_CATEGORY_ID,category.getId());
                 startActivity(i);

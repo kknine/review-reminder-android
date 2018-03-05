@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.kk9software.reviewreminder.data.DBHelper;
 import com.kk9software.reviewreminder.model.Category;
+import com.kk9software.reviewreminder.model.Chapter;
 import com.kk9software.reviewreminder.model.Reminder;
 import com.kk9software.reviewreminder.model.Subject;
 
@@ -60,6 +61,7 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
         TextView tvCategoryName;
         TextView tvSubjectName;
         TextView tvReminderTime;
+        TextView tvChapterName;
         LinearLayout llBackground;
 
         public ReminderViewHolder(View itemView) {
@@ -67,13 +69,16 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
             tvCategoryName = (TextView) itemView.findViewById(R.id.lir_category);
             tvSubjectName = (TextView) itemView.findViewById(R.id.lir_subject);
             tvReminderTime = (TextView) itemView.findViewById(R.id.lir_time);
+            tvChapterName = (TextView) itemView.findViewById(R.id.lir_chapter);
             llBackground = (LinearLayout) itemView.findViewById(R.id.lir_background);
         }
 
         public void bind(Reminder reminderToDisplay) {
             Subject subject = db.getSubject(reminderToDisplay.getSubjectId());
-            Category category = db.getCategory(subject.getCategoryId());
+            Chapter chapter = db.getChapter(subject.getId());
+            Category category = db.getCategory(chapter.getId());
             tvSubjectName.setText(subject.getName());
+            tvChapterName.setText(chapter.getName());
             tvCategoryName.setText(category.getName());
             tvReminderTime.setText(howFar(reminderToDisplay.getReminderTime()));
             this.itemView.setTag(reminderToDisplay.getId());
