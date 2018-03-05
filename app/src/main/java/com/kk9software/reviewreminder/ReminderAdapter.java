@@ -75,8 +75,8 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
 
         public void bind(Reminder reminderToDisplay) {
             Subject subject = db.getSubject(reminderToDisplay.getSubjectId());
-            Chapter chapter = db.getChapter(subject.getId());
-            Category category = db.getCategory(chapter.getId());
+            Chapter chapter = db.getChapter(subject.getChapterId());
+            Category category = db.getCategory(chapter.getCategoryId());
             tvSubjectName.setText(subject.getName());
             tvChapterName.setText(chapter.getName());
             tvCategoryName.setText(category.getName());

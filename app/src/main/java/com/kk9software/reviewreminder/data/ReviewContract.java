@@ -7,7 +7,6 @@ public class ReviewContract {
 
     public class SubjectEntry implements BaseColumns {
         public static final String TABLE_NAME = "subjects";
-        // TODO: change to chapter_id
         public static final String COLUMN_CHAPTER_ID = "chapter_id";
         public static final String COLUMN_SUBJECT_NAME = "subject_name";
         public static final String COLUMN_LEARN_TIME = "learn_time";
