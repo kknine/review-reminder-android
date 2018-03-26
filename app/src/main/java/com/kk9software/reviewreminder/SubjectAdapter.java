@@ -20,7 +20,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectV
 
     @Override
     public SubjectViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_review, parent, false);
+        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_subject, parent, false);
         return new SubjectViewHolder(view);
     }
 
@@ -35,19 +35,19 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectV
     public int getItemCount() {
         return mSubjectList.size();
     }
-    public void swapCursor(ArrayList<Subject> newSubjectList) {
+    public void swapData(ArrayList<Subject> newSubjectList) {
         mSubjectList = newSubjectList;
         this.notifyDataSetChanged();
     }
 
     class SubjectViewHolder extends RecyclerView.ViewHolder {
-        TextView subjectName;
+        TextView tvName;
         public SubjectViewHolder(View itemView) {
             super(itemView);
-            subjectName = (TextView) itemView.findViewById(R.id.lir_text);
+            tvName = (TextView) itemView.findViewById(R.id.lis_name);
         }
-        public void bind(Subject subjectToDisplay) {
-            subjectName.setText(subjectToDisplay.getName());
+        public void bind(Subject subject) {
+            tvName.setText(subject.getName());
         }
     }
 }

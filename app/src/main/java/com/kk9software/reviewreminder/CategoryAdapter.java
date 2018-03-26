@@ -15,8 +15,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
 
     private ArrayList<Category> mCategoryList;
-    public CategoryAdapter(ArrayList<Category> categoryList) {
+    private ChooseCategoryActivity.OnItemClickListener mListener;
+    public CategoryAdapter(ArrayList<Category> categoryList, ChooseCategoryActivity.OnItemClickListener listener) {
         mCategoryList = categoryList;
+        mListener = listener;
     }
     @Override
     public CategoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -34,8 +36,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
     @Override
     public int getItemCount() {
-
-        return 0;
+        if(mCategoryList==null)
+            return 0;
+        return mCategoryList.size();
+    }
+    public void swapData(ArrayList<Category> newCategoryList) {
+        mCategoryList = newCategoryList;
+        this.notifyDataSetChanged();
     }
 
     class CategoryViewHolder extends RecyclerView.ViewHolder {
@@ -43,14 +50,20 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         View itemView;
         TextView tvName;
 
-        public CategoryViewHolder(View itemView) {
+        private CategoryViewHolder(View itemView) {
             super(itemView);
             this.itemView = itemView;
             tvName = (TextView) itemView.findViewById(R.id.lic_name);
         }
-        public void bind(Category category) {
+        private void bind(final Category category) {
             tvName.setText(category.getName());
             itemView.setTag(category.getId());
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mListener.onItemClick(category);
+                }
+            });
         }
     }
 }

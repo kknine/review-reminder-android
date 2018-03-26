@@ -1,6 +1,7 @@
 package com.kk9software.reviewreminder;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,7 +11,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.util.concurrent.TimeUnit;
 
+import com.kk9software.reviewreminder.data.DBHelper;
+import com.kk9software.reviewreminder.model.Category;
+import com.kk9software.reviewreminder.model.Chapter;
 import com.kk9software.reviewreminder.model.Reminder;
+import com.kk9software.reviewreminder.model.Subject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -18,10 +23,12 @@ import java.util.Calendar;
 public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ReminderViewHolder> {
 
     private ArrayList<Reminder> mReminderList;
-    private Context context;
+    private Context mContext;
+    private DBHelper db;
     public ReminderAdapter(ArrayList<Reminder> reminderList, Context context) {
-        this.context = context;
+        this.mContext = context;
         this.mReminderList = reminderList;
+        db = new DBHelper(mContext);
     }
 
     @Override
@@ -51,26 +58,32 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
     }
 
     class ReminderViewHolder extends RecyclerView.ViewHolder {
-        TextView reminderName_tv;
-        TextView reminderTime_tv;
-        LinearLayout background_ll;
+        TextView tvCategoryName;
+        TextView tvSubjectName;
+        TextView tvReminderTime;
+        TextView tvChapterName;
+        LinearLayout llBackground;
 
         public ReminderViewHolder(View itemView) {
             super(itemView);
-            reminderName_tv = (TextView) itemView.findViewById(R.id.lir_text);
-            reminderTime_tv = (TextView) itemView.findViewById(R.id.lir_time);
-            background_ll = (LinearLayout) itemView.findViewById(R.id.lir_background);
+            tvCategoryName = (TextView) itemView.findViewById(R.id.lir_category);
+            tvSubjectName = (TextView) itemView.findViewById(R.id.lir_subject);
+            tvReminderTime = (TextView) itemView.findViewById(R.id.lir_time);
+            tvChapterName = (TextView) itemView.findViewById(R.id.lir_chapter);
+            llBackground = (LinearLayout) itemView.findViewById(R.id.lir_background);
         }
 
         public void bind(Reminder reminderToDisplay) {
-            reminderName_tv.setText(reminderToDisplay.getSubjectName());
-            reminderTime_tv.setText(howFar(reminderToDisplay.getReminderTime()));
+            Subject subject = db.getSubject(reminderToDisplay.getSubjectId());
+            Chapter chapter = db.getChapter(subject.getChapterId());
+            Category category = db.getCategory(chapter.getCategoryId());
+            tvSubjectName.setText(subject.getName());
+            tvChapterName.setText(chapter.getName());
+            tvCategoryName.setText(category.getName());
+            tvReminderTime.setText(howFar(reminderToDisplay.getReminderTime()));
             this.itemView.setTag(reminderToDisplay.getId());
             int color = determineColor(reminderToDisplay);
-            if(color!=0) {
-                background_ll.setBackgroundColor(ContextCompat.getColor(context,color));
-            }
-
+            llBackground.setBackgroundColor(ContextCompat.getColor(mContext,color));
         }
 
 
@@ -84,6 +97,7 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
             long difference = reminder.getReminderTime() - cal.getTimeInMillis();
             int green = R.color.green;
             int red = R.color.red;
+            int white = R.color.white;
             switch(interval) {
                 case 0:
                     if(Math.abs(difference)<=TimeUnit.MINUTES.toMillis(15))
@@ -91,16 +105,16 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
                     else if(difference<-TimeUnit.MINUTES.toMillis(15))
                         return red;
                     else
-                        return 0;
+                        return white;
                 case 1:
                     if(Math.abs(difference)<=TimeUnit.HOURS.toMillis(6))
                         return green;
                     else if(difference<-TimeUnit.HOURS.toMillis(6))
                         return red;
                     else
-                        return 0;
+                        return white;
                 default:
-                    return 0;
+                    return white;
             }
 
         }

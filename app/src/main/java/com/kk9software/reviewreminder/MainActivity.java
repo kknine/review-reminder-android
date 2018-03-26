@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -13,11 +14,13 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.kk9software.reviewreminder.data.DBHelper;
 import com.kk9software.reviewreminder.model.Reminder;
 import com.kk9software.reviewreminder.model.Subject;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
@@ -35,17 +38,18 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this,AddSubjectActivity.class);
+                Intent intent = new Intent(MainActivity.this,ChooseCategoryActivity.class);
                 startActivity(intent);
             }
         });
 
         // Fill the list with reminders
         db = new DBHelper(this);
-        reminderAdapter = new ReminderAdapter(null,this);
+        reminderAdapter = new ReminderAdapter(new ArrayList<Reminder>(),this);
         RecyclerView ReviewList = (RecyclerView) findViewById(R.id.main_recycler);
         ReviewList.setHasFixedSize(true);
         ReviewList.setLayoutManager(new LinearLayoutManager(this));
+        ReviewList.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         ReviewList.setAdapter(reminderAdapter);
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -55,14 +59,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int id = (int) viewHolder.itemView.getTag();
-                db.removeReminder(id);
-                reminderAdapter.swapData(db.getAllRemindersWithSubjects());
+                db.completeReview(id);
+                reminderAdapter.swapData(db.getAllUnCompletedReminders());
+                Toast.makeText(MainActivity.this,"Nice Job!", Toast.LENGTH_LONG).show();
             }
         }).attachToRecyclerView(ReviewList);
     }
     protected void onStart() {
         super.onStart();
-        reminderAdapter.swapData(db.getAllRemindersWithSubjects());
+        reminderAdapter.swapData(db.getAllUnCompletedReminders());
     }
 
     @Override
