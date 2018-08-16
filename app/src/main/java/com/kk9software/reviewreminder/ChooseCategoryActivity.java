@@ -25,6 +25,7 @@ public class ChooseCategoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_category);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("Categories");
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -41,6 +42,13 @@ public class ChooseCategoryActivity extends AppCompatActivity {
             @Override
             public void onItemClick(Category category) {
                 Intent i = new Intent(ChooseCategoryActivity.this,ChooseChapterActivity.class);
+                i.putExtra(EXTRA_CATEGORY_NAME,category.getName());
+                i.putExtra(EXTRA_CATEGORY_ID,category.getId());
+                startActivity(i);
+            }
+            @Override
+            public void onItemLongClick(Category category) {
+                Intent i = new Intent(ChooseCategoryActivity.this,EditCategoryActivity.class);
                 i.putExtra(EXTRA_CATEGORY_NAME,category.getName());
                 i.putExtra(EXTRA_CATEGORY_ID,category.getId());
                 startActivity(i);
@@ -62,6 +70,7 @@ public class ChooseCategoryActivity extends AppCompatActivity {
 
     public interface OnItemClickListener {
         void onItemClick(Category category);
+        void onItemLongClick(Category category);
     }
 
 }

@@ -2,7 +2,7 @@ package com.kk9software.reviewreminder.model;
 
 public class Category {
     private final int id;
-    private final String name;
+    private String name;
 
     public Category(int id, String name) {
         this.id = id;
@@ -17,6 +17,9 @@ public class Category {
     }
     public int getId() {
         return this.id;
+    }
+    public void setName(String newName) {
+        this.name = newName;
     }
 
 }

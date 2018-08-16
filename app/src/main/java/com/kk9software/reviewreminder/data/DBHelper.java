@@ -102,6 +102,28 @@ public class DBHelper extends SQLiteOpenHelper {
         return (int)db.insert(ChapterEntry.TABLE_NAME,null,cv);
     }
 
+    public boolean updateCategory(Category newCategory) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv  = new ContentValues();
+        cv.put(CategoryEntry.COLUMN_CATEGORY_NAME,newCategory.getName());
+        int numRows = db.update(CategoryEntry.TABLE_NAME,cv,CategoryEntry._ID + "=?",new String[] {Integer.toString(newCategory.getId())});
+        return numRows == 1;
+    }
+    public boolean updateChapter(Chapter newChapter) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv  = new ContentValues();
+        cv.put(ChapterEntry.COLUMN_CHAPTER_NAME,newChapter.getName());
+        int numRows = db.update(ChapterEntry.TABLE_NAME,cv,ChapterEntry._ID + "=?",new String[] {Integer.toString(newChapter.getId())});
+        return numRows == 1;
+    }
+    public boolean updateSubject(Subject newSubject) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv  = new ContentValues();
+        cv.put(SubjectEntry.COLUMN_SUBJECT_NAME,newSubject.getName());
+        int numRows = db.update(SubjectEntry.TABLE_NAME,cv,SubjectEntry._ID + "=?",new String[] {Integer.toString(newSubject.getId())});
+        return numRows == 1;
+    }
+
     public Subject getSubject(int subjectId) {
         SQLiteDatabase db  = this.getReadableDatabase();
         Subject result = null;

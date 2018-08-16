@@ -4,7 +4,7 @@ package com.kk9software.reviewreminder.model;
 public class Subject {
     private final int id;
     private final int chapterId;
-    private final String name;
+    private String name;
     private final long learnTime;
     public Subject(int id, int categoryId, String name,long learnTime) {
         this.id = id;
@@ -29,5 +29,8 @@ public class Subject {
     }
     public long getLearnTime() {
         return this.learnTime;
+    }
+    public void setName(String newName) {
+        this.name = newName;
     }
 }

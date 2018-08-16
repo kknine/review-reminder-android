@@ -14,8 +14,10 @@ import java.util.ArrayList;
 public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectViewHolder> {
 
     private ArrayList<Subject> mSubjectList;
-    public SubjectAdapter(ArrayList<Subject> subjectList) {
+    private ChooseSubjectActivity.OnItemClickListener mListener;
+    public SubjectAdapter(ArrayList<Subject> subjectList, ChooseSubjectActivity.OnItemClickListener listener) {
         this.mSubjectList = subjectList;
+        this.mListener = listener;
     }
 
     @Override
@@ -42,12 +44,22 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectV
 
     class SubjectViewHolder extends RecyclerView.ViewHolder {
         TextView tvName;
+        View itemView;
         public SubjectViewHolder(View itemView) {
             super(itemView);
+            this.itemView = itemView;
             tvName = (TextView) itemView.findViewById(R.id.lis_name);
         }
-        public void bind(Subject subject) {
+        public void bind(final Subject subject) {
             tvName.setText(subject.getName());
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    mListener.onItemLongClick(subject);
+                    return false;
+                }
+            });
+
         }
     }
 }
