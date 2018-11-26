@@ -4,7 +4,7 @@ package com.kk9software.reviewreminder.model;
 public class Chapter {
     private final int id;
     private final int categoryId;
-    private final String name;
+    private String name;
 
     public Chapter(int id, int categoryId, String chapterName) {
         this.id = id;
@@ -27,5 +27,9 @@ public class Chapter {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String newName) {
+        this.name = newName;
     }
 }

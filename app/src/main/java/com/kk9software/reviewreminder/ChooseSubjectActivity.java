@@ -21,6 +21,8 @@ public class ChooseSubjectActivity extends AppCompatActivity {
     private DBHelper db;
     private int chapterId;
     private String chapterName;
+    public static final String EXTRA_SUBJECT_NAME = "subjectName";
+    public static final String EXTRA_SUBJECT_ID = "subjectId";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,18 +53,16 @@ public class ChooseSubjectActivity extends AppCompatActivity {
 
         db = new DBHelper(this);
 
-        mSubjectAdapter = new SubjectAdapter(db.getSubjects(chapterId)
-                /*, new ChooseSubjectActivity.OnItemClickListener() {
+        mSubjectAdapter = new SubjectAdapter(db.getSubjects(chapterId), new ChooseSubjectActivity.OnItemClickListener() {
             @Override
-            public void onItemClick(Subject Subject) {
-                // TODO: Call activity to display details of the subject;
-              /*  Intent i = new Intent(ChooseSubjectActivity.this,ChooseSubjectActivity.class);
-                i.putExtra(EXTRA_Subject_NAME,Subject.getName());
-                i.putExtra(EXTRA_Subject_ID,Subject.getId());
+            public void onItemLongClick(Subject Subject) {
+                Intent i = new Intent(ChooseSubjectActivity.this,EditSubjectActivity.class);
+                i.putExtra(EXTRA_SUBJECT_NAME,Subject.getName());
+                i.putExtra(EXTRA_SUBJECT_ID,Subject.getId());
                 startActivity(i);
 
             }
-        } */
+        }
         );
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.main_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -78,7 +78,7 @@ public class ChooseSubjectActivity extends AppCompatActivity {
     }
 
     public interface OnItemClickListener {
-        void onItemClick(Subject subject);
+        void onItemLongClick(Subject subject);
     }
 
 

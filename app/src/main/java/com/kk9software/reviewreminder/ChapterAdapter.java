@@ -63,6 +63,14 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
                     mListener.onItemClick(chapter);
                 }
             });
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+
+                @Override
+                public boolean onLongClick(View v) {
+                    mListener.onItemLongClick(chapter);
+                    return false;
+                }
+            });
         }
     }
 

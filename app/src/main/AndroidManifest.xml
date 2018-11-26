@@ -21,15 +21,15 @@
         </activity>
         <activity
             android:name=".AddSubjectActivity"
+            android:label="Add new subject"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:label="Add new subject" />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ChooseCategoryActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".AddCategoryActivity"
-            android:label="Add new category"/>
+            android:label="Add new category" />
         <activity
             android:name=".ChooseChapterActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -39,6 +39,15 @@
         <activity
             android:name=".AddChapterActivity"
             android:label="Add new chapter" />
+        <activity
+            android:name=".EditCategoryActivity"
+            android:label="Edit category" />
+        <activity
+            android:name=".EditChapterActivity"
+            android:label="Edit chapter" />
+        <activity
+            android:name=".EditSubjectActivity"
+            android:label="Edit subject" />
     </application>
 
 </manifest>

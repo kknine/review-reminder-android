@@ -32,7 +32,7 @@ public class ChooseChapterActivity extends AppCompatActivity {
         categoryId = intent.getIntExtra(ChooseCategoryActivity.EXTRA_CATEGORY_ID,-1);
         categoryName = intent.getStringExtra(ChooseCategoryActivity.EXTRA_CATEGORY_NAME);
         if(categoryId==-1) {
-            Toast.makeText(this,"Oops something went wrong, sorry for the inconvenience",Toast.LENGTH_LONG);
+            Toast.makeText(this,"Oops something went wrong, sorry for the inconvenience",Toast.LENGTH_LONG).show();
             finish();
         }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -61,6 +61,13 @@ public class ChooseChapterActivity extends AppCompatActivity {
                 i.putExtra(EXTRA_CHAPTER_ID,chapter.getId());
                 startActivity(i);
             }
+            @Override
+            public void onItemLongClick(Chapter chapter) {
+                Intent i = new Intent(ChooseChapterActivity.this,EditChapterActivity.class);
+                i.putExtra(EXTRA_CHAPTER_NAME,chapter.getName());
+                i.putExtra(EXTRA_CHAPTER_ID,chapter.getId());
+                startActivity(i);
+            }
         });
 
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.main_recycler);
@@ -78,6 +85,7 @@ public class ChooseChapterActivity extends AppCompatActivity {
 
     public interface OnItemClickListener {
         void onItemClick(Chapter chapter);
+        void onItemLongClick(Chapter chapter);
     }
 
 
